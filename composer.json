@@ -1,0 +1,19 @@
+{
+    "name": "natsu90/eloadmy",
+    "description": "Malaysia Eload Library Wrapper",
+    "authors": [
+        {
+            "name": "Sulaiman",
+            "email": "mohd.sulaiman@sudirman.info"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "fabpot/goutte": "~2.0"
+    },
+    "autoload": {
+        "classmap": [
+            "src/eloadmy.php"
+        ]
+    }
+}

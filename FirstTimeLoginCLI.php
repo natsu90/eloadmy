@@ -48,33 +48,36 @@ if (php_sapi_name() == 'cli') {
 		$isLoginFailed = false;
 	}
 
-	echo "\nA TAC number have been sent to your mobile.";
+	if($eloadmy->isTacSent()) {
 
-	$isTACInvalid = true;
-	// attempt TAC
-	while($isTACInvalid) {
+		echo "\nA TAC number have been sent to your mobile.";
 
-		echo "\nEnter the TAC number: ";
-		$tacNumber = trim(fgets(STDIN));
+		$isTACInvalid = true;
+		// attempt TAC
+		while($isTACInvalid) {
 
-		$agentUserName = $eloadmy->setTac($tacNumber);
+			echo "\nEnter the TAC number: ";
+			$tacNumber = trim(fgets(STDIN));
 
-		if(!$agentUserName) {
+			$isTacValid = $eloadmy->submitTac($tacNumber);
 
-			echo "Invalid TAC Number!\n";
+			if(!$isTacValid) {
 
-			continue;
+				echo "Invalid TAC Number!\n";
+
+				continue;
+			}
+
+			$isTACInvalid = false;
 		}
 
-		$isTACInvalid = false;
 	}
 
-	$info = $eloadmy->getInfo();
+	echo "\nYour agentUserName value is, ".$eloadmy->getAgentUserName()."\n".
 
-	echo "\nYour agentUserName value is, {$agentUserName}\n".
-			"\n/*********************************************/\n";
+		"\n/*********************************************/\n";
 
-	print_r($info);
+	print_r($eloadmy->getInfo());
 	
 	echo	"\n/*********************************************/";
 

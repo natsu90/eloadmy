@@ -21,7 +21,12 @@ class EloadMy {
 			if(!$isUrlValid)
 				throw new Exception("Invalid Eload URL");
 				
-			$this->auth($param['mobileno'], $param['password'], $param['agentusername']);
+			$isAuthed = $this->auth($param['mobileno'], $param['password'], isset($param['agentusername']) ? $param['agentusername'] : false);
+
+			if(!$isAuthed)
+				throw new Exception("Login Failed");
+			else if($isAuthed && $this->isTacSent())
+				throw new Exception("Invalid AgentUserName value, run 'php vendor/natsu90/eloadmy/FirstTimeLoginCLI.php' to get the value");
 		}
 	}
 
@@ -75,12 +80,16 @@ class EloadMy {
 		return true;
 	}
 
-	public function setTac($tacNumber)
+	public function isTacSent()
 	{
-		$tacButton = $this->crawler->selectButton('Continue');
-		if(count($tacButton)) {
+		return (bool) count($this->crawler->selectButton('Continue'));
+	}
 
-			$this->form = $tacButton->form();
+	public function submitTac($tacNumber)
+	{
+		if($this->isTacSent()) {
+
+			$this->form = $this->crawler->selectButton('Continue')->form();
 
 			$this->crawler = $this->client->submit($this->form, array(
 
@@ -93,6 +102,11 @@ class EloadMy {
 				return false;
 		}
 
+		return true;
+	}
+
+	public function getAgentUserName()
+	{
 		$cookie = $this->client->getCookieJar()->get('AgentUserName');
 
 		return $cookie->getValue();
